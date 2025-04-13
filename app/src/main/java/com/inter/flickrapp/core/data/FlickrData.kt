@@ -30,7 +30,7 @@ data class Photo(
 
 data class GetPhotoInfoResponse(
     @SerializedName("photo")
-    val result: PhotoInfo,
+    val result: PhotoInfo? = null,
     val stat: String,
     val message: String? = null
 )
@@ -43,7 +43,7 @@ data class PhotoInfo(
     val title: Content?,
     val description: Content?,
     val views: Int,
-    val comments: Content?,
+    val comments: Content?
 ) {
 
     data class Owner(

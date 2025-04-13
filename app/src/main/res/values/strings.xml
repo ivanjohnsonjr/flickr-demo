@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Flickr App</string>
+    <string name="nav_back_description">Back Button</string>
+    <string name="detail_title">Detail Screen</string>
 </resources>

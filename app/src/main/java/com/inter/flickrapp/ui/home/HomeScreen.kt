@@ -21,6 +21,7 @@ import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
@@ -56,23 +57,25 @@ import kotlinx.coroutines.flow.filter
 
 @Composable
 fun HomeScreen(
-    modifier: Modifier = Modifier,
     viewModel: HomeViewModel = hiltViewModel(),
     showDetail: (Photo) -> Unit
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    InternalHomeScreen(
-        modifier = modifier,
-        query = state.query,
-        photos = state.photos,
-        isLoading = state.isLoading,
-        handleLoadMore = state.supportLoadMore,
-        errorMessage = state.errorMessage,
-        onSearch = { query, refresh -> viewModel.search(query, refresh) },
-        onSelect = { showDetail(it) },
-        onLoadMore = { viewModel.getNextPage() }
-    )
+    Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+        InternalHomeScreen(
+            modifier = Modifier.padding(innerPadding)
+                .padding(horizontal = Dimen.unit),
+            query = state.query,
+            photos = state.photos,
+            isLoading = state.isLoading,
+            handleLoadMore = state.supportLoadMore,
+            errorMessage = state.errorMessage,
+            onSearch = { query, refresh -> viewModel.search(query, refresh) },
+            onSelect = { showDetail(it) },
+            onLoadMore = { viewModel.getNextPage() }
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

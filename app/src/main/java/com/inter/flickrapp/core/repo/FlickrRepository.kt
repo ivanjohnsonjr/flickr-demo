@@ -22,12 +22,7 @@ class FlickrRepositoryImpl(
         return flow {
             val response = api.getRecentPhotos(page).execute()
             if (response.isSuccessful) {
-                val body = response.body()!!
-                if (body.stat == "ok") {
-                    emit(body.result)
-                } else {
-                    error(body.message ?: "")
-                }
+                emit(response.body()!!.result)
             } else {
                 error(response.message())
             }
@@ -51,7 +46,7 @@ class FlickrRepositoryImpl(
             if (response.isSuccessful) {
                 val body = response.body()!!
                 if (body.stat == "ok") {
-                    emit(body.result)
+                    emit(body.result!!)
                 } else {
                     error(body.message ?: "")
                 }

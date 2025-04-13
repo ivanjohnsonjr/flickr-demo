@@ -10,9 +10,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -23,42 +29,72 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.navigation.NavController
 import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.inter.flickrapp.R
 import com.inter.flickrapp.core.data.PhotoInfo
-import com.inter.flickrapp.ui.UiConstants.baseUrl
+import com.inter.flickrapp.ui.UiConstants.PHOTO_URL
 import com.inter.flickrapp.ui.detail.DetailViewModel.DetailState
 import com.inter.flickrapp.ui.home.ErrorMessage
 import com.inter.flickrapp.ui.theme.Dimen
 
 private val DetailState.imageUrl: String
     get() {
-        return baseUrl.replace("{server-id}", id!!.server)
+        return PHOTO_URL.replace("{server-id}", id!!.server)
             .replace("{id}", id.id)
             .replace("{secret}", id.secret)
     }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailScreen(
-    modifier: Modifier,
+    navController: NavController,
     viewModel: DetailViewModel = hiltViewModel()
 ) {
     val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    InternalDetailScreen(
-        modifier = modifier,
-        title = state.title,
-        imageUrl = state.imageUrl,
-        owner = state.owner,
-        description = state.description,
-        isRefreshing = state.isLoading,
-        errorMessage = state.errorMessage
-    ) {
-        viewModel.load()
+    Scaffold(
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            TopAppBar(
+                title = {
+                    state.title?.let {
+                        Text(
+                            modifier = Modifier.padding(start = Dimen.unit),
+                            text = stringResource(R.string.detail_title),
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                },
+                navigationIcon = {
+                    IconButton (onClick = { navController.popBackStack() }) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = stringResource(R.string.nav_back_description)
+                        )
+                    }
+                }
+            )
+        }
+    ) { innerPadding ->
+        InternalDetailScreen(
+            modifier = Modifier.padding(innerPadding)
+                .padding(horizontal = Dimen.unit),
+            title = state.title,
+            imageUrl = state.imageUrl,
+            owner = state.owner,
+            description = state.description,
+            isRefreshing = state.isLoading,
+            errorMessage = state.errorMessage
+        ) {
+            viewModel.load()
+        }
     }
 }
 
